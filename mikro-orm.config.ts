@@ -2,10 +2,11 @@ import {_prod_} from "./src/constants";
 import { Post } from "./src/entities/Post";
 import { MikroORM } from "@mikro-orm/core"
 import path from "node:path";
+import {User} from "./src/entities/User";
 
 
 export default {
-    entities: [Post],
+    entities: [Post, User],
     migrations: {
         migrations: {
             //creates an absolute path, so ok when run i diff directories
