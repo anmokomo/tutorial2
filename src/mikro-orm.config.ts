@@ -1,10 +1,18 @@
 import {_prod_} from "../constants";
 import { Post } from "./entities/Post";
 import { MikroORM } from "@mikro-orm/core"
+import path from "node:path";
 
 
 export default {
     entities: [Post],
+    migrations: {
+        migrations: {
+            //creates an absolute path, so ok when run i diff directories
+            path: path.join(__dirname, "./migrations"), // path to the folder with migrations
+            pattern: /^[\w-]+\d+\.ts$/, // regex pattern for the migration files
+        },
+    },
     dbName: 'lireddit',
     type: 'postgresql',
     // user: '',
