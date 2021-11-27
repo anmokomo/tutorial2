@@ -1,4 +1,4 @@
-import {Arg, Ctx, Field, InputType, Int, Mutation, Query, Resolver} from "type-graphql";
+import {Arg, Ctx, Field, InputType, Int, Mutation, ObjectType, Query, Resolver} from "type-graphql";
 import {User} from "../entities/User";
 import {MyContext} from "../types";
 import argon2 from 'argon2'
@@ -11,8 +11,58 @@ class UsernamePasswordInput {
     password: string
 }
 
+@ObjectType()
+class FieldError {
+    @Field()
+    field: string
+    @Field()
+    errorMsg: string
+}
+
+//
+@ObjectType()
+class UserResponse {
+    @Field(() => [FieldError], {nullable: true})
+    errors?: FieldError[]
+    //
+    @Field(() => User, {nullable: true})
+    user?: User
+}
+
+
 @Resolver()
 export class UserResolver {
+    @Mutation( () => UserResponse)
+    async loginUser(
+        @Arg('userCreds') userCreds: UsernamePasswordInput,
+        @Ctx() { em }: MyContext
+    ): Promise<UserResponse> {
+        //get user
+        const user = await em.findOne(User, {username: userCreds.username});
+        console.log("user: " + user)
+        //if user not found
+        if (!user) {
+            return {
+                errors: [{
+                    field: "username",
+                    errorMsg: "username not found",
+                }]
+            }
+        }
+        //check password
+        const valid = await argon2.verify(user.password, userCreds.password)
+        if (!valid) {
+            return {
+                errors: [{
+                    field: "password",
+                    errorMsg: "password incorrect",
+                }]
+            }
+        }
+        return {user}
+    }
+
+
     @Query(() => [User])
     users(@Ctx() { em }: MyContext): Promise<User[]> {
         return em.find(User, {})

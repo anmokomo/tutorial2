@@ -4,7 +4,7 @@ import {MyContext} from "../types";
 
 @Resolver()
 export class PostResolver {
-    @Query(() => [Post])
+    @Query(() => [Post]) //tells GQL to return array of Posts
     posts(@Ctx() { em }: MyContext): Promise<Post[]> {
        return em.find(Post, {})
     }
