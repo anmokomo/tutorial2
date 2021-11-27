@@ -10,7 +10,7 @@ export default {
         migrations: {
             //creates an absolute path, so ok when run i diff directories
             path: path.join(__dirname, "./migrations"), // path to the folder with migrations
-            pattern: /^[\w-]+\d+\.ts$/, // regex pattern for the migration files
+            pattern: /^[\w-]+\d+\.[tj]s$/, // regex pattern for the migration files
         },
     },
     dbName: 'lireddit',
