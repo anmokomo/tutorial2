@@ -1,5 +1,5 @@
-import {_prod_} from "../constants";
-import { Post } from "./entities/Post";
+import {_prod_} from "./src/constants";
+import { Post } from "./src/entities/Post";
 import { MikroORM } from "@mikro-orm/core"
 import path from "node:path";
 
@@ -17,7 +17,7 @@ export default {
     type: 'postgresql',
     // user: '',
     // password: '',
-    debug: !_prod_,
+    debug: !_prod_
 } as Parameters<typeof MikroORM.init>[0]
 //need to cast to correct type
 //Paramaters = gets paramaters of the type passed into
