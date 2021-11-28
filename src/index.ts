@@ -4,8 +4,8 @@ import microConfig from "../mikro-orm.config"
 import express from 'express'
 import {ApolloServer} from "apollo-server-express";
 import {buildSchema} from 'type-graphql'
-import {HelloResolver} from "./resolvers/hello";
-import {PostResolver} from "./resolvers/post";
+import {HelloResolver} from "./resolvers/hello.resolver";
+import {PostResolver} from "./resolvers/post.resolver";
 import {UserResolver} from "./resolvers/user.resolver";
 
 const main = async () => {
