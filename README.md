@@ -34,8 +34,6 @@ a fullstack tutorial
 2. put apolloServer startup, apply middleware in index.ts
 3. create resolvers 
 4. create types.ts w/ type of `orm.em`
-5. 
-#3 entities and orm 
 
 
 #migrations and orm info 
@@ -44,3 +42,27 @@ a fullstack tutorial
 - mikro_orm_migrations table keeps track of what migrations have been run
 - it's NOT rerunning old migrations; if you look at the sql being run, it selects from the migrations table
  
+#sessions
+- store some data about user on our servers (Redis; could also use postgres)
+- expressjs-sessions
+- cookie keeps user logged in 
+-------
+1. session created - `req.session.userId = user.id`
+2. value stored in Redis
+  - {userId: 1} -> sent to Redis (key-value store)
+  - 'sess:jfoidfvjfjdfd' --returns--> { userId: 1 }
+3. signed version of key set on browser 
+  - express-session middleware sets cookie on client browser; like a signed version of the key above (that returns Redis value)
+    - example:  
+      - Cookie is set and = fsdjfkl78979sdfs
+3. when user makes a request, fsdjfkl78979sdfs is sent to server 
+4. Server decrypts the cookie 'fsdjfkl78979sdfs' with the secret set in app.use(session...) options
+  -'fsdjfkl78979sdfs' ---> sess:jfoidfvjfjdfd 
+5. Make request to Redis
+  - sess:jfoidfvjfjdfd --returns--> { userId: 1 } 
+
+#4 Redis
+1. install Redis (I did via Homebrew) and other packages (connect-redis)
+2. set up connection in index.ts
+3. "me" query in user.resolver.ts uses user session cookie (looks at userId)
+4. 

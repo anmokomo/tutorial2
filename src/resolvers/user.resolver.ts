@@ -37,6 +37,16 @@ class UsernameResponse {
 
 @Resolver()
 export class UserResolver {
+    @Query(()=> User, {nullable: true})
+    async me(@Ctx() { em, req }: MyContext) {
+        console.log('Session ', req.session)
+       console.log('userId', req.session.userId)
+       if (!req.session.userId) {
+           return null
+       }
+       return em.findOne(User, { id: req.session.userId })
+    }
+
     @Query(() => [User])
     users(@Ctx() { em }: MyContext): Promise<User[]> {
         return em.find(User, {})
@@ -59,7 +69,7 @@ export class UserResolver {
     @Mutation( () => LoginResponse)
     async loginUser(
         @Arg('userCreds') userCreds: UsernamePasswordInput,
-        @Ctx() { em }: MyContext
+        @Ctx() { em, req }: MyContext
     ): Promise<LoginResponse> {
         //get user
         const user = await em.findOne(User, {username: userCreds.username});
@@ -82,16 +92,18 @@ export class UserResolver {
                 }]
             }
         }
+
+        //session attached to req; we can store anything inside of it; available in all resolvers
+        //sets cookie on the user, keeps them logged in
+        req.session.userId = user.id
+
         return { user:user }
     }
-
-
-
 
     @Mutation( () => UsernameResponse)
     async createUser(
         @Arg('userCreds') userCreds: UsernamePasswordInput,
-        @Ctx() { em }: MyContext): Promise<UsernameResponse> {
+        @Ctx() { em, req }: MyContext): Promise<UsernameResponse> {
 
         //hash password; await because .hash() returns a promise
         const hashedPassword = await argon2.hash(userCreds.password)
@@ -114,6 +126,8 @@ export class UserResolver {
                 }
             }
         }
+        req.session.userId = newUser.id
+
         return { user: newUser }
     }
 
